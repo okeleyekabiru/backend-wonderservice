@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C9A7A6E5-51C6-411C-9248-A92932CE26B8}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		backend-wonderservice.API\Dockerfile = backend-wonderservice.API\Dockerfile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend-wonderservice.API", "backend-wonderservice.API\backend-wonderservice.API.csproj", "{15F4ACFD-0692-4672-9D72-CD1C8F26D7C3}"
 EndProject
