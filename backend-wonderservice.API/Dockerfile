@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
-COPY Backend-wonderservice.sln .
 
 COPY ["backend-wonderservice.API/backend-wonderservice.API.csproj", "backend-wonderservice.API/"]
 COPY ["backend-wonderservice.DATA/backend-wonderservice.DATA.csproj", "backend-wonderservice.DATA/"]
