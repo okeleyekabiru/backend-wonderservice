@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
 
 COPY ["backend-wonderservice.API.csproj", "backend-wonderservice.API/"]
-COPY ["backend-wonderservice.DATA.csproj", "backend-wonderservice.DATA/"]
+COPY ["./backend-wonderservice.DATA/backend-wonderservice.DATA.csproj", "./backend-wonderservice.DATA/"]
 RUN dotnet restore "backend-wonderservice.API/backend-wonderservice.API.csproj"
 COPY . .
 WORKDIR "/src/backend-wonderservice.API"
