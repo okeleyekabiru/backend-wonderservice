@@ -145,12 +145,13 @@ namespace backend_wonderservice.API
                 c.InjectStylesheet("/swagger-ui/custom.css");
 
             });
+            app.UseStaticFiles();
+            app.UseHangfireDashboard();
             app.UseRouting();
             app.UseCors("corsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
-            app.UseHangfireDashboard();
+            
             Hangfire.BackgroundJob.Enqueue(() => Console.Write("running"));
             new BackgroundJob.BackgroundJob();
 
