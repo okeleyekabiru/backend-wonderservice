@@ -6,7 +6,6 @@ COPY ["backend-wonderservice.API/backend-wonderservice.API.csproj", "backend-won
 COPY ["backend-wonderservice.DATA/backend-wonderservice.DATA.csproj", "backend-wonderservice.DATA/"]
 RUN dotnet restore
 COPY . .
-COPY eprocurement-tool/ .
 
 FROM build AS publish
 WORKDIR /src
@@ -16,4 +15,4 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
 COPY --from=publish /src/publish .
 # heroku uses the following
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet eprocurement-tool.WebAPI.dll
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet backend-wonderservice.API.dll
