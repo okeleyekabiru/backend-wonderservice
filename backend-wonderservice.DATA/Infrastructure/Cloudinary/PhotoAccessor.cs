@@ -4,20 +4,29 @@ using System.Text;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace backend_wonderservice.DATA.Infrastructure.Cloudinary
 {
     public class PhotoAccessor : IPhotoAccessor
     {
+        private readonly IConfiguration _configuration;
 
 
         private readonly CloudinaryDotNet.Cloudinary _cloudinary;
 
-        public PhotoAccessor(IOptions<CloudinarySettings> config)
+        public PhotoAccessor(IConfiguration configuration)
         {
+            _configuration = configuration;
+           
+           var config = new CloudinarySettings();
+            config.ApiKey = _configuration.GetSection("CloudinaryApiKey").Value;
+            config.ApiSecret = _configuration.GetSection("CloudinaryApiSecret").Value;
+            config.CloudName = _configuration.GetSection("CloudinaryCloudName").Value;
+
             var acc = new Account
-                (config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
+                (config.CloudName, config.ApiKey, config.ApiSecret);
             _cloudinary = new CloudinaryDotNet.Cloudinary(acc);
         }
         public PhotoUpLoadResult AddPhoto(IFormFile file)
