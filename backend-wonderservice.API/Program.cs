@@ -10,12 +10,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Mindscape.Raygun4Net;
+using Mindscape.Raygun4Net.AspNetCore;
 using NLog.Extensions.Logging;
 using WonderService.Data.Services;
 
 namespace backend_wonderservice.API
 {
+#pragma warning disable CS1591
     public class Program
     {
         static RaygunClient _client = new RaygunClient("vo0odiFrRcVsN7uIxVtaUw");
@@ -28,6 +29,7 @@ namespace backend_wonderservice.API
                 var services = scope.ServiceProvider;
                 try
                 {
+
                     var userRole = services.GetRequiredService<RoleManager<IdentityRole>>();
                     var role = new RoleCreator();
                     role.Create(userRole).Wait();
@@ -68,4 +70,5 @@ namespace backend_wonderservice.API
             _client.Send(e.ExceptionObject as Exception);
         }
     }
+#pragma warning restore CS1591
 }

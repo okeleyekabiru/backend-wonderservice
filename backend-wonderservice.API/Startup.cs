@@ -21,6 +21,9 @@ using Microsoft.IdentityModel.Tokens;
 using Plugins.JwtHandler;
 using WonderService.Data.Repo;
 using WonderService.Data.Services;
+using System.Reflection;
+using System.IO;
+using Microsoft.OpenApi.Models;
 
 namespace backend_wonderservice.API
 {
@@ -41,6 +44,7 @@ namespace backend_wonderservice.API
             services.AddScoped<IUser, UserRepo>();
             services.AddScoped<ICustomerOrder, CustomerOrderRepo>();
             services.AddControllers();
+            services.AddSwaggerGen();
             services.AddSignalR();
             services.AddScoped<IStateRepo, StateRepo>();
             services.AddCors(opt =>
@@ -105,7 +109,8 @@ namespace backend_wonderservice.API
                 opt.Password.RequireNonAlphanumeric = true;
 
 
-            }).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders(); ;
+            }).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
+           
         }
 
 
@@ -113,18 +118,32 @@ namespace backend_wonderservice.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            try
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
-                context.Database.Migrate();
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+                    context.Database.Migrate();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+               
             }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseStaticFiles();
             // app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "wonder service v1");
+                c.InjectStylesheet("/swagger-ui/custom.css");
 
+            });
             app.UseRouting();
             app.UseCors("corsPolicy");
             app.UseAuthentication();
