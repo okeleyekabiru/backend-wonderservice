@@ -48,7 +48,7 @@ namespace backend_wonderservice.API.Controllers
         ///  <remarks>
         /// Sample request:
         ///
-        ///     POST /order
+        ///     POST api/order
         ///     {
         ///     
         ///"address":"45 gateway lagos",
