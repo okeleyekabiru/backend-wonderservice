@@ -6,7 +6,7 @@ using System.Text;
 namespace WonderService.Data.ViewModel
 {
    public class OrderModelUpdate
-    {
+    {[Required]
         public string Id { get; set; }
      
         public string Address { get; set; }

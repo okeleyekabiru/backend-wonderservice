@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using AutoMapper;
 using backend_wonderservice.API.SignalR;
@@ -15,7 +16,7 @@ using WonderService.Data.ViewModel;
 
 namespace backend_wonderservice.API.Controllers
 {
-
+    [Produces("application/json")]
     [Route("api/order")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -41,7 +42,37 @@ namespace backend_wonderservice.API.Controllers
             _hubContext = hubContext;
         }
 
+        /// <summary>
+        /// Create a customer order
+        /// </summary>
+        ///  <remarks>
+        /// Sample request:
+        ///
+        ///     POST /order
+        ///     {
+        ///     
+        ///"address":"45 gateway lagos",
+        ///"email": bob@gmail.com,
+        /// "phoneNumber": 08021344556,
+        ///"firstName": "coco",
+        ///"lastName": logan,
+        /// "serviceType": fumigation,
+        /// "appointmentDate": "0001-01-01T00:00:00",
+        /// "localGovernment": "surulere",
+        /// "states": "lagos"
+        /// }
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="order"></param>
+        /// <returns>A boolean</returns>
+        /// <response code="201">Returns boolean</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="500">If there is a network related issue</response>    
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Post(OrderModel order)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
@@ -73,8 +104,16 @@ namespace backend_wonderservice.API.Controllers
             return CreatedAtAction("Post", new {Success = true});
         }
 
+        /// <summary>
+        /// Get list of All orders that as been booked
+        /// </summary>
+        /// <returns>List of orders</returns>
+        /// <response code="200">Returns list of orders </response>
+        /// <response code="500"> If there is a network related issue</response>   
         [Authorize(Roles = Role.Admin, AuthenticationSchemes = "Bearer")]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetAll()
         {
             List<OrderModel> orderModel;
@@ -94,7 +133,19 @@ namespace backend_wonderservice.API.Controllers
 
             return Ok(orderModel);
         }
-
+        /// <summary>
+        /// Get a specific order from list of orders
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns a specific order</returns>
+        /// <response code="200">Returns a specific order </response>
+        /// <response code="500">If there is a network related issue</response>
+        /// <response code="400">Returns message that  id can not be null </response>
+        /// <response code="404">if order can not be found </response>    
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("id")]
         public async Task<ActionResult> Get(string id)
         {
@@ -102,6 +153,16 @@ namespace backend_wonderservice.API.Controllers
             OrderModel newModel;
             try
             {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest(new
+                    {
+                        message = "id can not be null please provide an id",
+                        code = 404,
+                        success = false,
+                        body = new {}
+                    });
+                }
                 orderModel = await _customerOrder.GetOrder(id);
                 if (orderModel == null) return NoContent();
                 newModel = _mapper.Map<Customer, OrderModel>(orderModel);
@@ -115,8 +176,20 @@ namespace backend_wonderservice.API.Controllers
 
             return Ok(newModel);
         }
-
+        /// <summary>
+        /// Get a specific order from list of orders
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns a specific order</returns>
+        /// /// <response code="200">Returns a deleted order </response>
+        /// <response code="500">If there is a network related issue</response>
+        /// /// <response code="400">Returns message that  id can not be null </response>
+        /// <response code="404">if order can not be found </response>    
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete(string id)
         {
             Customer orderModel;
@@ -139,7 +212,37 @@ namespace backend_wonderservice.API.Controllers
             return Ok(orderModel);
         }
 
+        /// <summary>
+        /// /// Update a specific order
+        /// </summary>
+        ///  <remarks>
+        /// Sample request:
+        ///
+        ///     Put /order
+        ///     {
+        ///     "id":"a92e17be-9d7f-4a78-b2ed-2545a5121d74"
+        ///"address":"45 gateway lagos",
+        ///"email": bob@gmail.com,
+        /// "phoneNumber": 08021344556,
+        ///"firstName": "coco",
+        ///"lastName": logan,
+        /// "serviceType": fumigation,
+        /// "appointmentDate": "0001-01-01T00:00:00",
+        /// "localGovernment": "surulere",
+        /// "states": "lagos"
+        /// }
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        /// <response code="200">Returns updated order</response>
+        /// <response code="400">If the id is null</response>
+        /// <response code="500">If there is a network related issue</response>    
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Update(OrderModelUpdate order)
         {
             Customer orderModel;
