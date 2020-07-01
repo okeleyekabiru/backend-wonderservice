@@ -4,15 +4,16 @@ COPY Backend-wonderservice.sln .
 
 COPY ["backend-wonderservice.API/backend-wonderservice.API.csproj", "backend-wonderservice.API/"]
 COPY ["backend-wonderservice.DATA/backend-wonderservice.DATA.csproj", "backend-wonderservice.DATA/"]
-RUN dotnet restore "backend-wonderservice.API/backend-wonderservice.API.csproj"
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/backend-wonderservice.API"
-RUN dotnet build "backend-wonderservice.API.csproj" -c Release -o /app/build
+COPY eprocurement-tool/ .
 
 FROM build AS publish
-RUN dotnet publish "backend-wonderservice.API.csproj" -c Release -o /app/publish
+WORKDIR /src
+RUN dotnet publish -c Release -o /src/publish
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet backend-wonderservice.API.dll
+COPY --from=publish /src/publish .
+# heroku uses the following
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet eprocurement-tool.WebAPI.dll
