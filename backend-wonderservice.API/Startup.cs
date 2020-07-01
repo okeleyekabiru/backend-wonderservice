@@ -52,7 +52,7 @@ namespace backend_wonderservice.API
             {
                 opt.AddPolicy("corsPolicy", builder =>
                 {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200").Build();
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://wonderservice.netlify.app").Build();
                 });
             });
             services.AddHangfire(configuration => configuration
