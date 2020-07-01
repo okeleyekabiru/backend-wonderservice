@@ -13,13 +13,13 @@ namespace backend_wonderservice.DATA.Infrastructure
 {
     public class EmailService : IMailService
     {
-        private readonly IConfigurationSection _emailConfig;
+        private readonly IConfiguration _config;
         private readonly ILogger<EmailService> _logger;
         private readonly IHttpContextAccessor _accessor;
 
         public EmailService(IConfiguration config, ILogger<EmailService> logger, IHttpContextAccessor accessor)
         {
-            _emailConfig = config.GetSection("Email");
+            _config = config;
             _logger = logger;
             _accessor = accessor;
         }
@@ -27,13 +27,13 @@ namespace backend_wonderservice.DATA.Infrastructure
         {
             if (string.IsNullOrEmpty(email))
             {
-                email = _emailConfig.GetValue<string>("Developer");
+                email = _config.GetSection("EmailDeveloper").Value;
             }
             try
             {
                 // Credentials
-                var credentials = new NetworkCredential(_emailConfig.GetValue<string>("Address"),
-                    _emailConfig.GetValue<string>("Password"));
+                var credentials = new NetworkCredential(_config.GetSection("EmailAddress").Value,
+                    _config.GetSection("EmailPassword").Value);
 
                 // Mail message
                 var mail = new MailMessage()

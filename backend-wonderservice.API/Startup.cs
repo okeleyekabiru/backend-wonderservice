@@ -39,6 +39,7 @@ namespace backend_wonderservice.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
 
             services.AddTransient<IMailService, EmailService>();
             services.AddScoped<IUser, UserRepo>();
@@ -58,7 +59,7 @@ namespace backend_wonderservice.API
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(Configuration.GetConnectionString("Wonder"), new SqlServerStorageOptions
+                .UseSqlServerStorage(Configuration.GetSection("Wonder").Value, new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
@@ -73,10 +74,10 @@ namespace backend_wonderservice.API
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.AddScoped<IPhoto, PhotoRepo>();
 
-            services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
+          
             services.AddDbContext<DataContext>(opt =>
             {
-                opt.UseSqlServer(Configuration.GetConnectionString("Wonder"));
+                opt.UseSqlServer(Configuration.GetSection("Wonder").Value);
 
             });
             services.AddAutoMapper(typeof(CreateProfile));
