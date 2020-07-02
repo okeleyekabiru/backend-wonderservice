@@ -29,8 +29,11 @@ namespace backend_wonderservice.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public  readonly IWebHostEnvironment _env;
+        public Startup(IConfiguration configuration,IWebHostEnvironment env)
         {
+            _env = env;
+            
             Configuration = configuration;
         }
 
@@ -48,13 +51,23 @@ namespace backend_wonderservice.API
             services.AddSwaggerGen();
             services.AddSignalR();
             services.AddScoped<IStateRepo, StateRepo>();
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy("corsPolicy", builder =>
+            if (_env.IsDevelopment())
+                services.AddCors(opt =>
                 {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://wonderservice.netlify.app").Build();
+                    opt.AddPolicy("corsPolicy", builder =>
+                    {
+                        builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200").Build();
+                    });
                 });
-            });
+            else
+                services.AddCors(opt =>
+                {
+                    opt.AddPolicy("corsPolicy", builder =>
+                    {
+                        builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://wonderservice.netlify.app").Build();
+                    });
+                });
+
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
