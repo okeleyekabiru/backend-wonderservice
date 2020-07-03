@@ -20,5 +20,7 @@ namespace backend_wonderservice.DATA.Abstration
         Task<bool> VerifyEmail(string email);
         Task<ReturnResult> ConfirmEmail(string token);
         string GetCurrent();
+        Task<User> UpdatePassword(User user,string newPassword);
+        Task<bool> VerifyOldPassword(User user,string oldPassword);
     }
 }

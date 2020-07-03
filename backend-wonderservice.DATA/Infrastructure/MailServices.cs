@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Mail;
+
 using System.Text;
 using backend_wonderservice.DATA.Abstration;
 using backend_wonderservice.DATA.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Net;
+using MailKit;
+using MailKit.Net.Smtp;
+using MimeKit;
+using IMailService = backend_wonderservice.DATA.Abstration.IMailService;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+
 
 namespace backend_wonderservice.DATA.Infrastructure
 {
@@ -23,12 +32,16 @@ namespace backend_wonderservice.DATA.Infrastructure
             _logger = logger;
             _accessor = accessor;
         }
+
+      
+
         public void SendMail(string email, string message, string subject)
         {
             if (string.IsNullOrEmpty(email))
             {
                 email = _config.GetSection("EmailDeveloper").Value;
             }
+
             try
             {
                 // Credentials
@@ -48,12 +61,12 @@ namespace backend_wonderservice.DATA.Infrastructure
                 mail.To.Add(new MailAddress(email));
 
                 // Smtp client
-                var client = new SmtpClient()
+                var client = new System.Net.Mail.SmtpClient()
                 {
                     Port = 587,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     UseDefaultCredentials = false,
-                    Host = "smtp.gmail.com",
+                    Host = "smtp.lightbim.tech",
                     EnableSsl = true,
                     Credentials = credentials
                 };
@@ -62,10 +75,11 @@ namespace backend_wonderservice.DATA.Infrastructure
             }
             catch (Exception e)
             {
-                _logger.LogInformation($"Something went wrong, unable to send email to {email} on {DateTime.Now} {e.InnerException?.ToString() ?? e.Message}");
+                _logger.LogInformation(
+                    $"Something went wrong, unable to send email to {email} on {DateTime.Now} {e.InnerException?.ToString() ?? e.Message}");
             }
-        }
 
+        }
 
 
 
@@ -91,7 +105,9 @@ namespace backend_wonderservice.DATA.Infrastructure
         public void VerifyEmail(string email, string message)
         {
             string host = _accessor.HttpContext.Request.Host.Value;
-            SendMail(email, $"Please confirm your account by clicking <a href='{"http://" + host + "/api/user/confirmation?Token=" + message}'>here</a>", "Confirm your account");
+            SendMail(email,
+                $"Please confirm your account by clicking <a href='{"http://" + host + "/api/user/confirmation?Token=" + message}'>here</a>",
+                "Confirm your account");
         }
 
         public string OrderDetails(Customer customer, string serviceType)
@@ -116,5 +132,7 @@ namespace backend_wonderservice.DATA.Infrastructure
                            + $"       <input type='text' disabled value={serviceType} style='margin - bottom: 2em; border - radius: 4px; background - color:rgba(192, 192, 192, 0.5); color: black; height: 2.5em; width: 25em; '><br>");
             return builder.ToString();
         }
+
     }
 }
+

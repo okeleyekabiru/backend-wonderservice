@@ -178,5 +178,22 @@ public    class UserRepo:IUser
         {
             return _httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
+
+        public async Task<User> UpdatePassword(User user,string newPassword)
+        {
+            var passwordToken =await _userManager.GeneratePasswordResetTokenAsync(user);
+             var result =   await  _userManager.ResetPasswordAsync(user, passwordToken, newPassword);
+            if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        public async  Task<bool> VerifyOldPassword(User user, string oldPassword)
+        {
+            return await _userManager.CheckPasswordAsync(user, oldPassword);
+        }
     }
 }
